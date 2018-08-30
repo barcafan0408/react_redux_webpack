@@ -3,7 +3,7 @@ import List from "./List";
 import Form from "./Form";
 
 const App = () => (
-  <div className="container-fluid">
+  
     <div className="row mt-4">
       <div className="col-6">
         <h2>Transport list</h2>
@@ -14,7 +14,7 @@ const App = () => (
         <Form />
       </div>
     </div>
-  </div>
+  
 );
 
 export default App;

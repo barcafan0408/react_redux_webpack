@@ -7,3 +7,8 @@ export const addTransportList = data => ({
   type: 'ADD_TRANSPORT_LIST',
   payload: data,
 });
+
+export const removeTransport = id => ({
+  type: "REMOVE_TRANSPORT",
+  payload: id
+});
