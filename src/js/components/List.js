@@ -5,6 +5,8 @@ import PropTypes from "prop-types";
 import { addTransportList, removeTransport } from "../actions/index";
 import { Button, Modal } from 'react-bootstrap';
 
+import EditTransport from './EditTransport';
+
 const mapStateToProps = state => {  
   return { transportList: state.transportList.list };
 };
@@ -22,10 +24,12 @@ class ConnectedList extends React.Component{
     super();    
     
     this.handleClose = this.handleClose.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);    
     
     this.state = {
-      show: false
+      show: false,
+      showEdit: false,
+      editEl: {},
     };    
   }
 
@@ -53,8 +57,13 @@ class ConnectedList extends React.Component{
   handleShow(id) {
     this.setState({ show: true, deleteId: id });
   }
+
+  handleShowEdit(el) {
+    this.setState({ showEdit: true, editEl: el });
+  }  
   
-  render() {  	
+  render() {  
+    let editModalClose = () => this.setState({ showEdit: false });	
   	return (
   	  <div>  	
 	    <ul className="list-group list-group-flush">
@@ -72,7 +81,7 @@ class ConnectedList extends React.Component{
 	            </button>
 	            <button 
 	              className="col-2 btn btn-warning btn-sm offset-1"
-	            
+	              onClick={this.handleShowEdit.bind(this, el)}
 	            >
 	              Change
 	            </button>
@@ -101,6 +110,9 @@ class ConnectedList extends React.Component{
 			</Button>
           </Modal.Footer>
 		</Modal>
+		{this.state.showEdit ?		
+		  <EditTransport show={this.state.showEdit} onHide={editModalClose} transport={this.state.editEl}/>	
+		: null}	
       </div>
 	)
   }  
