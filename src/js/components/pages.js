@@ -2,6 +2,21 @@ import React from 'react';
 import List from "./List";
 import Form from "./Form";
 
+import AddStorage from "./AddStorage";
+import StoragesList from "./StoragesList";
+
+import {withGoogleMap, Marker, GoogleMap} from "react-google-maps";
+
+const MyGoogleMapComponent = withGoogleMap(props => 
+  <GoogleMap
+    defaultZoom={8}
+    defaultCenter={{ lat: -34.397, lng: 150.644 }}
+  >
+    {props.isMarkerShown && <Marker position={{ lat: -34.397, lng: 150.644 }} />}
+  </GoogleMap>
+)
+
+
 export const Home = () => (
   <div>
     <h1>Admin delivery settings</h1>
@@ -22,8 +37,15 @@ export const TransportPage = () => (
 )
 
 export const StoragePage = () => (
-  <div>
-    <h1>StoragePage</h1>
+  <div className="row mt-4">
+    <div className="col-4">
+      <h2>Storages list</h2>
+      <StoragesList />
+    </div>
+    <div className="col-7 offset-md-1">
+      <h2>Add new storage</h2>
+      <AddStorage />
+    </div>
   </div>
 )
 

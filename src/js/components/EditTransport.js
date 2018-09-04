@@ -20,13 +20,14 @@ class EditModal extends React.Component{
     this.setState({ [event.target.id]: event.target.value });
   }
 
-  handleSubmit() {    
+  handleSubmit(event) {    
   	event.preventDefault();
     const { name, volume, maxWeight, speed } = this.state;    
     const id = this.props.transport.id;    
     axios.put(`http://localhost:3000/transport/${id}`, { transportName:name, volume, maxWeight, speed})
       .then(res => {
       	console.log(res);  
+      	this.props.onHide();
       })
       .catch(err =>
         console.error(err)

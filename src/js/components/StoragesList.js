@@ -2,41 +2,39 @@ import React from "react";
 import { connect } from "react-redux";
 import axios from 'axios';
 import PropTypes from "prop-types";
-import { addTransportList, removeTransport } from "../actions/index";
+import { addStoragesList, removeStorage } from "../actions/index";
 import { Button, Modal } from 'react-bootstrap';
 
-import EditTransport from './EditTransport';
+
 
 const mapStateToProps = state => {  
-  return { transportList: state.transportList.list };
+  return { storagesList: state.storagesList.list };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    addTransportList: data => dispatch(addTransportList(data)),
-    removeTransport: id => dispatch(removeTransport(id))
+    addStoragesList: data => dispatch(addStoragesList(data)),
+    removeStorage: id => dispatch(removeStorage(id))
   };
 };
 
 class ConnectedList extends React.Component{
   
   constructor() {
-    super();    
-    
-    this.handleClose = this.handleClose.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);    
-    
+    super(); 
+
     this.state = {
       show: false,
-      showEdit: false,
-      editEl: {},
     };    
+  
+    this.handleClose = this.handleClose.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);  
   }
 
   componentDidMount() {
-    axios.get('http://localhost:3000/transport')
+    axios.get('http://localhost:3000/storages')
     .then(response => {
-      this.props.addTransportList(response.data);
+      this.props.addStoragesList(response.data);
     });
   }
 
@@ -44,12 +42,12 @@ class ConnectedList extends React.Component{
     this.setState({ show: false });   
     const id = this.state.deleteId;
     console.log(id);
-    axios.delete(`http://localhost:3000/transport/${id}`)
+    axios.delete(`http://localhost:3000/storages/${id}`)
       .then(res => {
-        this.props.removeTransport(id);
+        this.props.removeStorage(id);
       });
   }
-  
+
   handleClose() {
     this.setState({ show: false });
   }  
@@ -57,28 +55,18 @@ class ConnectedList extends React.Component{
   handleShow(id) {
     this.setState({ show: true, deleteId: id });
   }
-
-  handleShowEdit(el) {
-    this.setState({ showEdit: true, editEl: el });
-  }  
   
   render() {  
-    //let editModalClose = () => this.setState({ showEdit: false });
-    let editModalClose = () => {
-    	this.setState({ showEdit: false });
-    	axios.get('http://localhost:3000/transport')
-		    .then(response => {
-		      this.props.addTransportList(response.data);
-		    });
-		}	
+    	
   	return (
   	  <div>  	
 	    <ul className="list-group list-group-flush">
-	      {this.props.transportList.map(el => (
+	      {this.props.storagesList.map(el => (
 	        <li className="list-group-item" key={el.id}>
 	          <div className="row align-items-center">
 	            <div className="col-7">
-	        	  {el.name} {'(volume: ' + el.volume + ', max weight: ' + el.maxWeight + ', speed: ' + el.speed + ')'}
+	        	  {el.name} {'(country: ' + el.country + ', region: ' + el.region + ', city: ' + 
+	        	  el.city + ', street: ' + el.street + ', house: ' + el.house + ', type: ' + el.storageType + ')'}
 	            </div>
 	            <button 
 	              className="col-2 btn btn-danger btn-sm"
@@ -88,7 +76,7 @@ class ConnectedList extends React.Component{
 	            </button>
 	            <button 
 	              className="col-2 btn btn-warning btn-sm offset-1"
-	              onClick={this.handleShowEdit.bind(this, el)}
+	              
 	            >
 	              Change
 	            </button>
@@ -116,10 +104,7 @@ class ConnectedList extends React.Component{
 			  Cancel
 			</Button>
           </Modal.Footer>
-		</Modal>
-		{this.state.showEdit ?		
-		  <EditTransport show={this.state.showEdit} onHide={editModalClose} transport={this.state.editEl}/>	
-		: null}	
+		</Modal>	
       </div>
 	)
   }  
@@ -128,7 +113,7 @@ class ConnectedList extends React.Component{
 const List = connect(mapStateToProps,mapDispatchToProps)(ConnectedList);
 
 ConnectedList.propTypes = {
-  transportList: PropTypes.array.isRequired
+  storagesList: PropTypes.array.isRequired
 };
 
 export default List;
