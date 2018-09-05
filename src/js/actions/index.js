@@ -27,3 +27,18 @@ export const removeStorage = id => ({
   type: "REMOVE_STORAGE",
   payload: id
 });
+
+export const addTariff = tariff => ({
+  type: "ADD_TARIFF",
+  payload: tariff
+});
+
+export const addTariffsList = data => ({
+  type: "ADD_TARIFFS_LIST",
+  payload: data
+});
+
+export const removeTariff = id => ({
+  type: "REMOVE_TARIFF",
+  payload: id
+});

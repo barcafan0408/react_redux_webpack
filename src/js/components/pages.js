@@ -5,6 +5,8 @@ import Form from "./Form";
 import AddStorage from "./AddStorage";
 import StoragesList from "./StoragesList";
 
+import AddTariff from "./AddTariff";
+
 import {withGoogleMap, Marker, GoogleMap} from "react-google-maps";
 
 const MyGoogleMapComponent = withGoogleMap(props => 
@@ -50,7 +52,14 @@ export const StoragePage = () => (
 )
 
 export const TariffPage = () => (
-  <div>
-    <h1>TariffPage</h1>
+  <div className="row mt-4">
+    <div className="col-6">
+      <h2>Tariffs list</h2>
+
+    </div>
+    <div className="col-4 offset-md-1">
+      <h2>Add new tariff</h2>
+      <AddTariff />
+    </div>
   </div>
 )
