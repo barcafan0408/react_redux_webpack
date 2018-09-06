@@ -1,7 +1,11 @@
 {
   "name": "minimal-react-webpack",
   "version": "1.0.0",
-  "description": "A minimal React Webpack project to get you started",  
+  "description": "A minimal React Webpack project to get you started",
+  "engines": {
+    "node": ">=6.5 <=9",
+    "npm": ">=3.10"
+  },  
   "main": "index.js",
   "scripts": {
     "build": "webpack --mode production",
