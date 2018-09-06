@@ -1,6 +1,6 @@
 import { ADD_TARIFF, ADD_TARIFFS_LIST, REMOVE_TARIFF } from "../constants/action-types";
 
-const storageReducer = (state = { list:[] }, action) => {
+const tariffReducer = (state = { list:[] }, action) => {
   switch (action.type) {        
     case ADD_TARIFF: {
       let _list;
@@ -24,4 +24,4 @@ const storageReducer = (state = { list:[] }, action) => {
   }
 };
 
-export default storageReducer;
+export default tariffReducer;
