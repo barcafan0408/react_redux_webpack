@@ -2,11 +2,12 @@
   "name": "minimal-react-webpack",
   "version": "1.0.0",
   "description": "A minimal React Webpack project to get you started",  
-  "main": "webpack.config.js",
+  "main": "index.js",
   "scripts": {
     "build": "webpack --mode production",
     "start": "webpack-dev-server --mode development --open",
-    "heroku-postbuild": "webpack -p"
+    "heroku-prebuild":
+      "NODE_ENV=development npm i -g node-gyp-install pm2 babel-cli babel-polyfill babel-register gulp-cli && node-gyp-install && yarn && yarn build --release"
   },  
   "keywords": [],
   "author": "",
