@@ -1,21 +1,17 @@
 {
   "name": "minimal-react-webpack",
   "version": "1.0.0",
-  "description": "A minimal React Webpack project to get you started",
-  "engines": {
-    "node": ">=6.5 <=9",
-    "npm": ">=3.10"
-  },  
-  "main": "index.js",
+  "description": "A minimal React Webpack project to get you started",  
+  "main": "webpack.config.js",
   "scripts": {
     "build": "webpack --mode production",
+    "webpack-devserver": "webpack-dev-server --debug --hot --devtool eval-source-map --output-pathinfo --watch --colors --inline --content-base public --port 8080 --host 0.0.0.0",
     "start": "webpack-dev-server --mode development --open",
-    "heroku-prebuild":
-      "NODE_ENV=development npm i -g node-gyp-install pm2 babel-cli babel-polyfill babel-register gulp-cli && node-gyp-install && yarn && yarn build --release"
-  },  
+    "heroku-postbuild": "webpack -p"
+  },
   "keywords": [],
   "author": "",
-  "license": "MIT",  
+  "license": "MIT",
   "devDependencies": {
     "axios": "^0.18.0",
     "babel-core": "^6.26.0",
@@ -42,23 +38,25 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
+    "css-loader": "^1.0.0",
+    "express": "^4.16.3",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.0.6",
+    "path": "^0.12.7",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
+    "react-bootstrap": "^0.32.3",
+    "react-bootstrap-modal": "^4.1.1",
     "react-dom": "^16.2.0",
+    "react-google-maps": "^9.4.5",
     "react-redux": "^5.0.6",
+    "react-router-dom": "^4.3.1",
+    "react-select": "^2.0.0",
     "redux": "^3.7.2",
+    "style-loader": "^0.23.0",
     "uuid": "^3.1.0",
     "webpack": "^4.1.1",
     "webpack-cli": "^2.0.11",
-    "webpack-dev-server": "^3.1.1",
-    "css-loader": "^1.0.0",
-    "react-bootstrap": "^0.32.3",
-    "react-bootstrap-modal": "^4.1.1",
-    "react-google-maps": "^9.4.5",
-    "react-router-dom": "^4.3.1",
-    "react-select": "^2.0.0",
-    "style-loader": "^0.23.0"
+    "webpack-dev-server": "^3.1.1"
   }
 }
