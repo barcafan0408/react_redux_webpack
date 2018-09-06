@@ -1,7 +1,7 @@
 {
   "name": "minimal-react-webpack",
   "version": "1.0.0",
-  "description": "A minimal React Webpack project to get you started",  
+  "description": "A minimal React Webpack project to get you started",
   "main": "webpack.config.js",
   "scripts": {
     "build": "webpack --mode production",
@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "babel": "^6.23.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
