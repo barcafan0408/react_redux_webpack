@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "babel": "^6.23.0",
+    "babel": "^5.x",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
