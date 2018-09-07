@@ -7,6 +7,9 @@ import { addTariff } from "../actions/index";
 import {Overlay, Tooltip} from 'react-bootstrap';
 import ReactDOM from 'react-dom';
 
+const env = process.env.NODE_ENV || 'development';
+const config = require(`${__dirname}/../../../config/config.js`)[env];
+
 const mapDispatchToProps = dispatch => {
   return {
     addTariff: tariff => dispatch(addTariff(tariff))
@@ -79,7 +82,7 @@ class TariffComponent extends Component<*, State> {
   	} else {  		
 	  const { date, idStorageSender, idStorageReceiver, minWeight, maxWeight, fragile, price } = this.state;
 	    
-	  axios.post(`http://localhost:3000/tariffs`, { date, idStorageSender, idStorageReceiver, minWeight, maxWeight, fragile, price })
+	  axios.post(`${config.path}/tariffs`, { date, idStorageSender, idStorageReceiver, minWeight, maxWeight, fragile, price })
 	    .then(res => {
 	      console.log(res);
 	      console.log(res.data);

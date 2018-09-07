@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import Select from 'react-select'
 import axios from 'axios';
 
+const env = process.env.NODE_ENV || 'development';
+const config = require(`${__dirname}/../../../config/config.js`)[env];
+
 class SelectComponent extends Component {
   
   constructor(props) {
@@ -13,7 +16,7 @@ class SelectComponent extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:3000/storages')
+    axios.get(`${config.path}/storages`)
       .then(res => {
         this.setState({
           storages: res.data.map(store => ({ label: store.name, value: store.id }))

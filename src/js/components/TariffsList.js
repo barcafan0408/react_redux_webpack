@@ -5,6 +5,9 @@ import PropTypes from "prop-types";
 import { addStoragesList, addTariffsList, removeTariff } from "../actions/index";
 import { Button, Modal } from 'react-bootstrap';
 
+const env = process.env.NODE_ENV || 'development';
+const config = require(`${__dirname}/../../../config/config.js`)[env];
+
 const mapStateToProps = state => {
   const {list} = state.storagesList;  
   const tariffsList = state.tariffsList.list.map(el => {
@@ -44,11 +47,11 @@ class ConnectedList extends React.Component{
   }
 
   componentDidMount() {
-    axios.get('http://localhost:3000/storages')
+    axios.get(`${config.path}/storages`)
     .then(response => {
       this.props.addStoragesList(response.data);
     });
-    axios.get('http://localhost:3000/tariffs')
+    axios.get(`${config.path}/tariffs`)
     .then(response => {
       this.props.addTariffsList(response.data);
     });
@@ -58,7 +61,7 @@ class ConnectedList extends React.Component{
     this.setState({ show: false });   
     const id = this.state.deleteId;
     console.log(id);
-    axios.delete(`http://localhost:3000/tariffs/${id}`)
+    axios.delete(`${config.path}/tariffs/${id}`)
       .then(res => {
         this.props.removeTariff(id);
       });

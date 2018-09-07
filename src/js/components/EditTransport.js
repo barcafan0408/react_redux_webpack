@@ -2,6 +2,9 @@ import React from "react";
 import axios from 'axios';
 import { Button, Modal } from 'react-bootstrap';
 
+const env = process.env.NODE_ENV || 'development';
+const config = require(`${__dirname}/../../../config/config.js`)[env];
+
 class EditModal extends React.Component{
 
   constructor(props) {
@@ -24,7 +27,7 @@ class EditModal extends React.Component{
   	event.preventDefault();
     const { name, volume, maxWeight, speed } = this.state;    
     const id = this.props.transport.id;    
-    axios.put(`http://localhost:3000/transport/${id}`, { transportName:name, volume, maxWeight, speed})
+    axios.put(`${config.path}/transport/${id}`, { transportName:name, volume, maxWeight, speed})
       .then(res => {
       	console.log(res);  
       	this.props.onHide();

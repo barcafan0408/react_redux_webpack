@@ -5,6 +5,9 @@ import PropTypes from "prop-types";
 import {withGoogleMap, Marker, GoogleMap} from "react-google-maps";
 import { addStorage } from "../actions/index";
 
+const env = process.env.NODE_ENV || 'development';
+const config = require(`${__dirname}/../../../config/config.js`)[env];
+
 const mapDispatchToProps = dispatch => {
   return {
     addStorage: storage => dispatch(addStorage(storage))
@@ -109,7 +112,7 @@ class StorageComponent extends Component {
     const { country, region, city, street, house } = this.state.address;
   	const { name, type } = this.state;
     
-    axios.post(`http://localhost:3000/storages`, { storageName:name, country, region, city, street, house, storageType:type })
+    axios.post(`${config.path}/storages`, { storageName:name, country, region, city, street, house, storageType:type })
       .then(res => {
         console.log(res);
         console.log(res.data);

@@ -7,6 +7,9 @@ import { Button, Modal } from 'react-bootstrap';
 
 import EditTransport from './EditTransport';
 
+const env = process.env.NODE_ENV || 'development';
+const config = require(`${__dirname}/../../../config/config.js`)[env];
+
 const mapStateToProps = state => {  
   return { transportList: state.transportList.list };
 };
@@ -34,7 +37,7 @@ class ConnectedList extends React.Component{
   }
 
   componentDidMount() {
-    axios.get('http://localhost:3000/transport')
+    axios.get(`${config.path}/transport`)
     .then(response => {
       this.props.addTransportList(response.data);
     });
@@ -44,7 +47,7 @@ class ConnectedList extends React.Component{
     this.setState({ show: false });   
     const id = this.state.deleteId;
     console.log(id);
-    axios.delete(`http://localhost:3000/transport/${id}`)
+    axios.delete(`${config.path}/transport/${id}`)
       .then(res => {
         this.props.removeTransport(id);
       });
@@ -66,7 +69,7 @@ class ConnectedList extends React.Component{
     //let editModalClose = () => this.setState({ showEdit: false });
     let editModalClose = () => {
     	this.setState({ showEdit: false });
-    	axios.get('http://localhost:3000/transport')
+    	axios.get(`${config.path}/transport`)
 		    .then(response => {
 		      this.props.addTransportList(response.data);
 		    });

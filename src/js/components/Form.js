@@ -4,6 +4,9 @@ import axios from 'axios';
 import PropTypes from "prop-types";
 import { addTransport } from "../actions/index";
 
+const env = process.env.NODE_ENV || 'development';
+const config = require(`${__dirname}/../../../config/config.js`)[env];
+
 const mapDispatchToProps = dispatch => {
   return {
     addTransport: transport => dispatch(addTransport(transport))
@@ -33,7 +36,7 @@ class ConnectedForm extends Component {
     event.preventDefault();
     const { name, volume, maxWeight, speed } = this.state;
     
-    axios.post(`http://localhost:3000/transport`, { transportName:name, volume, maxWeight, speed})
+    axios.post(`${config.path}/transport`, { transportName:name, volume, maxWeight, speed})
       .then(res => {
         console.log(res);
         console.log(res.data);
