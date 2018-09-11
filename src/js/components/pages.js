@@ -8,6 +8,8 @@ import StoragesList from "./StoragesList";
 import AddTariff from "./AddTariff";
 import TariffsList from "./TariffsList";
 
+import AddSending from "./AddSending";
+
 import {withGoogleMap, Marker, GoogleMap} from "react-google-maps";
 
 const MyGoogleMapComponent = withGoogleMap(props => 
@@ -61,6 +63,19 @@ export const TariffPage = () => (
     <div className="col-4 offset-md-1">
       <h2>Add new tariff</h2>
       <AddTariff />
+    </div>
+  </div>
+)
+
+export const SendingPage = () => (
+  <div className="row mt-4">
+    <div className="col-4">
+      <h2>Sendings list</h2>
+      
+    </div>
+    <div className="col-6 offset-md-1">
+      <h2>Add new sending</h2>
+      <AddSending />
     </div>
   </div>
 )

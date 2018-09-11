@@ -1,6 +1,6 @@
 import React from "react";
 import { Switch, Route, Link } from 'react-router-dom';
-import { Home, TransportPage, StoragePage, TariffPage } from './pages';
+import { Home, TransportPage, StoragePage, TariffPage, SendingPage } from './pages';
 import './style.css';
 
 const Main = () => (
@@ -10,6 +10,7 @@ const Main = () => (
       <Route exact path='/1' component={TransportPage}/>
       <Route exact path='/2' component={StoragePage} />
       <Route exact path='/3' component={TariffPage} />
+      <Route exact path='/4' component={SendingPage} />
     </Switch>
   </main>
 )
@@ -39,6 +40,7 @@ class Header extends React.Component {
         {path: "/1", text: "Transport", isActive: false},
         {path: "/2", text: "Storage", isActive: false},
         {path: "/3", text: "Tariff", isActive: false},
+        {path: "/4", text: "Sending", isActive: false},
       ]
     }
   }
