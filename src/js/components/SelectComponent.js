@@ -24,11 +24,15 @@ class SelectComponent extends Component {
       })
   }
   
-  render() {
+  render() {  	
+  	const index = this.state.storages.findIndex((element) =>
+      element.id === this.props.idStorage 
+    );
     return (
       <div>
         <Select          
           name="form-field-name"
+          value={this.props.idStorage === null || this.props.idStorage === undefined ? null : this.state.storages[index]}
           onChange={this.props.handleOnChange}          
           isClearable='true'
           isSearchable='true'

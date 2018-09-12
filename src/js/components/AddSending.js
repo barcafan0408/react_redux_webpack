@@ -6,6 +6,7 @@ import SelectComponent from './SelectComponent';
 import { addSending } from "../actions/index";
 import {Overlay, Tooltip} from 'react-bootstrap';
 import ReactDOM from 'react-dom';
+import async from 'async';
 
 const env = process.env.NODE_ENV || 'development';
 const config = require(`${__dirname}/../../../config/config.js`)[env];
@@ -27,8 +28,8 @@ class SendingComponent extends Component {
       amount: 0,
       fragile: false,
       cost: 0,  
-      idStorageSender: '',
-      idStorageReceiver: '',
+      idStorageSender: null,
+      idStorageReceiver: null,
       idUserSender: '',
       idUserReceiver: '',
       sender: {
@@ -48,7 +49,7 @@ class SendingComponent extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSenderChange = this.handleSenderChange.bind(this);
     this.handleReceiverChange = this.handleReceiverChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    //this.handleSubmit = this.handleSubmit.bind(this);
 
   }  
 
@@ -84,7 +85,7 @@ class SendingComponent extends Component {
   handleStorageSenderChange (e) {    
     if (e === null) {
       this.setState({	
-      	idStorageSender: '',
+      	idStorageSender: null,
       })
     } else {
       this.setState({	
@@ -97,7 +98,7 @@ class SendingComponent extends Component {
   handleStorageReceiverChange (e) {
     if (e === null) {
       this.setState({	
-      	idStorageReceiver: '',
+      	idStorageReceiver: null,
       })
     } else {
       this.setState({	
@@ -114,17 +115,196 @@ class SendingComponent extends Component {
     }
   }
 
-  handleSenderChange(event) {
-  	this.setState( {sender: { [event.target.id]: event.target.value } }); 
+  handleSenderChange(event) {  	 
+  	this.setState({
+	  sender: Object.assign({}, this.state.sender, {
+	    [event.target.id]: event.target.value,
+	  }),
+	});
   }
 
   handleReceiverChange(event) {
-  	this.setState( {receiver: { [event.target.id]: event.target.value } });
+  	this.setState({
+	  receiver: Object.assign({}, this.state.receiver, {
+	    [event.target.id]: event.target.value,
+	  }),
+	});
   }
 
-  handleSubmit(event) {
+  //handleSubmit = async (event) => {
+  handleSubmit = (event) => {
   	event.preventDefault();
+
+  	const { coment, weight, amount, fragile, cost } = this.state;
+  	const { senderName, senderEmail } = this.state.sender;
+    const { receiverName, receiverEmail } = this.state.receiver;
+    const senderPhone = this.state.sender.senderPhone.replace(/-/g,"");
+    const receiverPhone = this.state.receiver.receiverPhone.replace(/-/g,"");
+
+    //this.getUserSender("0".concat(senderPhone.replace(/-/g,"")), "0".concat(receiverPhone.replace(/-/g,"")));
+    //this.getUserReceiver("0".concat(receiverPhone.replace(/-/g,"")));
+	
+    //await this.testGetUser("0".concat(senderPhone.replace(/-/g,"")));
+
+	//await this.testGetUser("0".concat(receiverPhone.replace(/-/g,"")));
+
+	//this.testGetUserSender("0".concat(senderPhone.replace(/-/g,"")))	
+	//.then(this.testAddUserSender());
+	
+	//working approach
+	//this.testMakeQuery("0".concat(senderPhone.replace(/-/g,"")))
+	//	.then(res => { this.testGetUser1(res) })
+	//	//.then(this.testGetUser(res))
+	//	.then(() => this.testAddUserSender());
+
+	//const p1 = new Promise( resolve => {
+  	//	axios.get(`${config.path}/users/phone/0975291015`)
+  	//  		.then(res => {
+	//    		resolve (this.setState( {idUserSender: res.data.id}));
+	//  })        
+	//  .catch(err =>
+	//    console.error(err)
+	//  );	
+	//});
+
+	//p1.then().then(this.testAddUserSender());
+
+	this.createQuery(senderPhone)
+		.then(res => this.getUserSender(res))
+		.then(() => this.createUserSender(senderName, senderPhone, senderEmail))
+		.then(res => this.getUserSender(res))
+		.then(() => this.createQuery(receiverPhone))
+		.then(res => this.getUserReceiver(res))
+		.then(() => this.createUserReceiver(receiverName, receiverPhone, receiverEmail))
+		.then(res => this.getUserReceiver(res))
+		.then(() => this.createSending())
+		.then(() => this.clearState());
+
+	console.log("finish ;)");
+
   }
+
+  createQuery = (phone) => {
+  	console.log("createQuery");
+  	return axios.get(`${config.path}/users/phone/${phone}`);	
+  }
+
+  getUserSender = (res) => {
+  	console.log("getUserSender");
+  	if (res !== undefined && res.data !== '') {
+  	  this.setState( {idUserSender: res.data.id });
+  	}
+  }
+
+  createUserSender = (userName, phone, email) => {
+  	console.log("createUserSender");
+  	if (this.state.idUserSender === '') {
+  	  return axios.post(`${config.path}/users`, { userName, phone, email })
+  	}
+  }
+
+  getUserReceiver = (res) => {
+  	console.log("getUserReceiver");
+  	if (res !== undefined && res.data !== '') {
+  	  this.setState( {idUserReceiver: res.data.id });
+  	}
+  }
+
+  createUserReceiver = (userName, phone, email) => {
+  	console.log("createUserReceiver");
+  	if (this.state.idUserReceiver === '') {
+  	  return axios.post(`${config.path}/users`, { userName, phone, email })
+  	}
+  }
+
+  createSending = () => {
+  	const { coment, weight, amount, fragile, cost, idStorageSender, idStorageReceiver, idUserSender, idUserReceiver } = this.state;
+  	console.log("createUserSender");
+  	if (idUserSender !== '' && idUserReceiver !== '') {
+  	  axios.post(`${config.path}/sendings`, { date: new Date(), status: 'in_processing', number: Math.floor(Math.random() * 10000000000).toString(),
+  	   coment, weight, amount, fragile, cost, idStorageSender, idStorageReceiver, idUserSender, idUserReceiver })
+  	    .then(res => {  
+  	      console.log(res);
+	      console.log(res.data);
+	    })
+  	}	
+  }
+
+
+
+  clearState = () => {
+  	console.log("clearState");
+  	this.setState({       
+      coment: '',
+      weight: 0,
+      amount: 0,
+      fragile: false,
+      cost: 0,  
+      idStorageSender: null,
+      idStorageReceiver: null,
+      idUserSender: '',
+      idUserReceiver: '',
+      sender: {
+      	senderName: '',
+      	senderPhone: '',
+      	senderEmail: '',	
+      },
+      receiver: {
+      	receiverName: '',
+      	receiverPhone: '',
+      	receiverEmail: '',	
+      }
+    });
+  }
+
+
+
+
+  /*testGetUserSender = phone => {
+  	return new Promise( resolve => {
+  		axios.get(`${config.path}/users/phone/${phone}`)
+  	  		.then(res => {
+	    		resolve (this.setState( {idUserSender: res.data.id}));
+	  })        
+	  .catch(err =>
+	    console.error(err)
+	  );	
+	});
+  }
+
+  testMakeQuery = (phone) => {
+  	return axios.get(`${config.path}/users/phone/${phone}`);	
+  }
+
+  testGetUser = (res) => {
+  	return new Promise( (resolve, reject) => {this.setState( {idUserSender: res.data.id});});	
+  }
+
+  testGetUser1 = (res) => {
+  	this.setState( {idUserSender: res.data.id });
+  }
+
+  testAddUserSender = () => {
+  	if (this.state.idUserSender) {
+  		console.log(this.state.idUserSender);
+  	} else {
+  		console.log("no");
+  	}
+  }
+
+  testGetUserReceiver = (phone) => {
+  	axios.get(`${config.path}/users/phone/${phone}`)
+  	  .then(res => {
+	    this.setState( {idUserReceiver: res.data.id});
+	  })        
+	  .catch(err =>
+	    console.error(err)
+	  );	
+  }*/
+
+  
+
+  
 
   render() {  	
     const { coment, weight, amount, fragile, cost } = this.state;
@@ -246,7 +426,7 @@ class SendingComponent extends Component {
             	className="form-control"
             	id="coment"
             	placeholder='Enter coment'
-            	pattern='{0,255}'            
+            	maxLength="255"            
             	value={coment}
 	        	onChange={this.handleChange}            
           	  />
@@ -284,6 +464,7 @@ class SendingComponent extends Component {
 			      		type="checkbox"
 			      		id="fragile"
 			      		value={fragile}
+			      		checked={fragile}
 	        	  		onChange={this.handleFragileChange}
 			    	  />
 			      	  Fragile
@@ -296,6 +477,7 @@ class SendingComponent extends Component {
 	          	  <label htmlFor="title">Storage sender</label>
               	  <SelectComponent
           	        id="StorageSender"
+          	        idStorage={this.state.idStorageSender}
 	                ref={select => {
 	                  this.target1 = select;
 	              	}}                        
@@ -308,6 +490,7 @@ class SendingComponent extends Component {
               	  <label htmlFor="title">Storage receiver</label>
               	  <SelectComponent
                 	id="StorageReceiver"
+                	idStorage={this.state.idStorageReceiver}
 	              	ref={select => {
 	               	  this.target2 = select;
 	              	}} 
