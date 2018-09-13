@@ -23,8 +23,8 @@ class TariffComponent extends Component<*, State> {
 
     this.state = { 
       date: '',
-      idStorageSender: '',
-      idStorageReceiver: '',
+      idStorageSender: null,
+      idStorageReceiver: null,
       minWeight: 0,
       maxWeight: 0,
       fragile: false,
@@ -43,7 +43,7 @@ class TariffComponent extends Component<*, State> {
   handleStorageSenderChange (e) {    
     if (e === null) {
       this.setState({	
-      	idStorageSender: '',
+      	idStorageSender: null,
       })
     } else {
       this.setState({	
@@ -55,7 +55,7 @@ class TariffComponent extends Component<*, State> {
   handleStorageReceiverChange (e) {
     if (e === null) {
       this.setState({	
-      	idStorageReceiver: '',
+      	idStorageReceiver: null,
       })
     } else {
       this.setState({	
@@ -70,12 +70,12 @@ class TariffComponent extends Component<*, State> {
 
   handleSubmit(event) {
   	event.preventDefault();
-  	if (this.state.idStorageSender == '') {
+  	if (this.state.idStorageSender == null) {
   	  this.setState({ 
   		showValidationErrorSender: true,
       })
   	}
-  	else if (this.state.idStorageReceiver == '') {
+  	else if (this.state.idStorageReceiver == null) {
   	  this.setState({ 
   		showValidationErrorReceiver: true,
       })
@@ -94,8 +94,8 @@ class TariffComponent extends Component<*, State> {
 
 	  this.setState({ 
 	    date: '',
-	    idStorageSender: '',
-	    idStorageReceiver: '',
+	    idStorageSender: null,
+	    idStorageReceiver: null,
 	    minWeight: 0,
 	    maxWeight: 0,
 	    fragile: false,
@@ -122,6 +122,7 @@ class TariffComponent extends Component<*, State> {
           <label htmlFor="title">Storage sender</label>
           <SelectComponent
           	id="StorageSender"
+          	idStorage={this.state.idStorageSender}
 	        ref={select => {
 	          this.target1 = select;
 	        }}                        
@@ -129,7 +130,8 @@ class TariffComponent extends Component<*, State> {
           />
           <label htmlFor="title">Storage receiver</label>
           <SelectComponent
-          id="StorageReceiver"
+            id="StorageReceiver"
+            idStorage={this.state.idStorageReceiver}
 	        ref={select => {
 	          this.target2 = select;
 	        }} 
@@ -163,6 +165,7 @@ class TariffComponent extends Component<*, State> {
 			    type="checkbox"
 			    id="fragile"
 			    value={fragile}
+			    checked={fragile}
 	        	onChange={this.handleChange}
 			  />
 			  Fragile

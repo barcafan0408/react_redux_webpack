@@ -4,7 +4,7 @@ import axios from 'axios';
 import PropTypes from "prop-types";
 import SelectComponent from './SelectComponent';
 import { addSending } from "../actions/index";
-import {Overlay, Tooltip} from 'react-bootstrap';
+import {Overlay, Tooltip, Button, Modal} from 'react-bootstrap';
 import ReactDOM from 'react-dom';
 import async from 'async';
 
@@ -41,16 +41,11 @@ class SendingComponent extends Component {
       	receiverName: '',
       	receiverPhone: '',
       	receiverEmail: '',	
-      }
-    };    
-    
-    this.handleStorageSenderChange = this.handleStorageSenderChange.bind(this);
-    this.handleStorageReceiverChange = this.handleStorageReceiverChange.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSenderChange = this.handleSenderChange.bind(this);
-    this.handleReceiverChange = this.handleReceiverChange.bind(this);
-    //this.handleSubmit = this.handleSubmit.bind(this);
-
+      },
+      show: false,
+      newSendingId: '',
+      showError: false,
+    };  
   }  
 
   getTariff = () => {
@@ -77,12 +72,42 @@ class SendingComponent extends Component {
   	});
   }
 
+  getSenderByPhone = () => {
+  	const phone = this.state.sender.senderPhone.replace(/-/g,"");
+    axios.get(`${config.path}/users/phone/${phone}`)	
+      .then(res => {
+      	if (res !== undefined && res.data !== '') {
+  	      this.setState({
+  	        sender: Object.assign({}, this.state.sender, {
+		      senderName: res.data.name,
+		      senderEmail: res.data.email,
+		    })
+		  })  	      
+  	   	}
+	  })
+  }
+
+  getReceiverByPhone = () => {
+  	const phone = this.state.receiver.receiverPhone.replace(/-/g,"");
+    axios.get(`${config.path}/users/phone/${phone}`)	
+      .then(res => {
+      	if (res !== undefined && res.data !== '') {
+  	      this.setState({
+  	        receiver: Object.assign({}, this.state.receiver, {
+		      receiverName: res.data.name,
+		      receiverEmail: res.data.email,
+		    })
+		  })  	      
+  	   	}
+	  })
+  }
+
   handleFragileChange = event => {
   	this.setState({ [event.target.id]: event.target.checked });
   	this.getTariff();
   }
 
-  handleStorageSenderChange (e) {    
+  handleStorageSenderChange = (e) => {    
     if (e === null) {
       this.setState({	
       	idStorageSender: null,
@@ -95,7 +120,7 @@ class SendingComponent extends Component {
     this.getTariff();
   };
 
-  handleStorageReceiverChange (e) {
+  handleStorageReceiverChange = (e) => {
     if (e === null) {
       this.setState({	
       	idStorageReceiver: null,
@@ -108,22 +133,30 @@ class SendingComponent extends Component {
     this.getTariff();
   };
 
-  handleChange(event) {
+  handleChange = (event) => {
     this.setState({ [event.target.id]: event.target.value });
     if (event.target.id === 'weight') {
       this.getTariff();	
     }
   }
 
-  handleSenderChange(event) {  	 
+  handleSenderChange = (event) => {   	
   	this.setState({
 	  sender: Object.assign({}, this.state.sender, {
 	    [event.target.id]: event.target.value,
 	  }),
-	});
+	});    
   }
 
-  handleReceiverChange(event) {
+  handleSenderBlur = () => {
+  	this.getSenderByPhone();	
+  }
+
+  handleReceiverBlur = () => {
+  	this.getReceiverByPhone();	
+  }
+
+  handleReceiverChange = (event) => {
   	this.setState({
 	  receiver: Object.assign({}, this.state.receiver, {
 	    [event.target.id]: event.target.value,
@@ -131,7 +164,10 @@ class SendingComponent extends Component {
 	});
   }
 
-  //handleSubmit = async (event) => {
+  handleClose = () => {
+    this.setState({ show: false, showError: false });
+  }
+  
   handleSubmit = (event) => {
   	event.preventDefault();
 
@@ -141,99 +177,75 @@ class SendingComponent extends Component {
     const senderPhone = this.state.sender.senderPhone.replace(/-/g,"");
     const receiverPhone = this.state.receiver.receiverPhone.replace(/-/g,"");
 
-    //this.getUserSender("0".concat(senderPhone.replace(/-/g,"")), "0".concat(receiverPhone.replace(/-/g,"")));
-    //this.getUserReceiver("0".concat(receiverPhone.replace(/-/g,"")));
-	
-    //await this.testGetUser("0".concat(senderPhone.replace(/-/g,"")));
-
-	//await this.testGetUser("0".concat(receiverPhone.replace(/-/g,"")));
-
-	//this.testGetUserSender("0".concat(senderPhone.replace(/-/g,"")))	
-	//.then(this.testAddUserSender());
-	
-	//working approach
-	//this.testMakeQuery("0".concat(senderPhone.replace(/-/g,"")))
-	//	.then(res => { this.testGetUser1(res) })
-	//	//.then(this.testGetUser(res))
-	//	.then(() => this.testAddUserSender());
-
-	//const p1 = new Promise( resolve => {
-  	//	axios.get(`${config.path}/users/phone/0975291015`)
-  	//  		.then(res => {
-	//    		resolve (this.setState( {idUserSender: res.data.id}));
-	//  })        
-	//  .catch(err =>
-	//    console.error(err)
-	//  );	
-	//});
-
-	//p1.then().then(this.testAddUserSender());
-
 	this.createQuery(senderPhone)
 		.then(res => this.getUserSender(res))
 		.then(() => this.createUserSender(senderName, senderPhone, senderEmail))
 		.then(res => this.getUserSender(res))
+		.catch(err => this.createErrorMessage())
 		.then(() => this.createQuery(receiverPhone))
 		.then(res => this.getUserReceiver(res))
 		.then(() => this.createUserReceiver(receiverName, receiverPhone, receiverEmail))
 		.then(res => this.getUserReceiver(res))
+		.catch(err => this.createErrorMessage())
 		.then(() => this.createSending())
 		.then(() => this.clearState());
+  }
 
-	console.log("finish ;)");
-
+  createErrorMessage = () => {
+  	this.setState({
+  		showError: true,
+  	});
   }
 
   createQuery = (phone) => {
-  	console.log("createQuery");
+  	//console.log("createQuery");
   	return axios.get(`${config.path}/users/phone/${phone}`);	
   }
 
   getUserSender = (res) => {
-  	console.log("getUserSender");
+  	//console.log("getUserSender");
   	if (res !== undefined && res.data !== '') {
   	  this.setState( {idUserSender: res.data.id });
   	}
   }
 
   createUserSender = (userName, phone, email) => {
-  	console.log("createUserSender");
+  	//console.log("createUserSender");
   	if (this.state.idUserSender === '') {
-  	  return axios.post(`${config.path}/users`, { userName, phone, email })
+  	  return axios.post(`${config.path}/users`, email === '' ? { userName, phone } : { userName, phone, email })
   	}
   }
 
   getUserReceiver = (res) => {
-  	console.log("getUserReceiver");
+  	//console.log("getUserReceiver");
   	if (res !== undefined && res.data !== '') {
   	  this.setState( {idUserReceiver: res.data.id });
   	}
   }
 
   createUserReceiver = (userName, phone, email) => {
-  	console.log("createUserReceiver");
+  	//console.log("createUserReceiver");
   	if (this.state.idUserReceiver === '') {
-  	  return axios.post(`${config.path}/users`, { userName, phone, email })
+  	  return axios.post(`${config.path}/users`, email === '' ? { userName, phone } : { userName, phone, email })
   	}
   }
 
   createSending = () => {
-  	const { coment, weight, amount, fragile, cost, idStorageSender, idStorageReceiver, idUserSender, idUserReceiver } = this.state;
-  	console.log("createUserSender");
+  	//console.log("createUserSender");
+  	const { coment, weight, amount, fragile, cost, idStorageSender, idStorageReceiver, idUserSender, idUserReceiver } = this.state;  	
   	if (idUserSender !== '' && idUserReceiver !== '') {
   	  axios.post(`${config.path}/sendings`, { date: new Date(), status: 'in_processing', number: Math.floor(Math.random() * 10000000000).toString(),
   	   coment, weight, amount, fragile, cost, idStorageSender, idStorageReceiver, idUserSender, idUserReceiver })
   	    .then(res => {  
-  	      console.log(res);
-	      console.log(res.data);
+  	      //console.log(res);
+	      this.setState({newSendingId: res.data.id, show: true});
 	    })
+	    .catch(err => this.createErrorMessage())
   	}	
   }
 
-
-
   clearState = () => {
-  	console.log("clearState");
+  	//console.log("clearState");
   	this.setState({       
       coment: '',
       weight: 0,
@@ -255,62 +267,14 @@ class SendingComponent extends Component {
       	receiverEmail: '',	
       }
     });
-  }
-
-
-
-
-  /*testGetUserSender = phone => {
-  	return new Promise( resolve => {
-  		axios.get(`${config.path}/users/phone/${phone}`)
-  	  		.then(res => {
-	    		resolve (this.setState( {idUserSender: res.data.id}));
-	  })        
-	  .catch(err =>
-	    console.error(err)
-	  );	
-	});
-  }
-
-  testMakeQuery = (phone) => {
-  	return axios.get(`${config.path}/users/phone/${phone}`);	
-  }
-
-  testGetUser = (res) => {
-  	return new Promise( (resolve, reject) => {this.setState( {idUserSender: res.data.id});});	
-  }
-
-  testGetUser1 = (res) => {
-  	this.setState( {idUserSender: res.data.id });
-  }
-
-  testAddUserSender = () => {
-  	if (this.state.idUserSender) {
-  		console.log(this.state.idUserSender);
-  	} else {
-  		console.log("no");
-  	}
-  }
-
-  testGetUserReceiver = (phone) => {
-  	axios.get(`${config.path}/users/phone/${phone}`)
-  	  .then(res => {
-	    this.setState( {idUserReceiver: res.data.id});
-	  })        
-	  .catch(err =>
-	    console.error(err)
-	  );	
-  }*/
-
-  
-
-  
+  } 
 
   render() {  	
     const { coment, weight, amount, fragile, cost } = this.state;
     const { senderName, senderPhone, senderEmail } = this.state.sender;
     const { receiverName, receiverPhone, receiverEmail } = this.state.receiver;
   	return (
+  	  <div>
   	  <form onSubmit={this.handleSubmit}>
         <div className="form-group">
           <div className="panel panel-default">
@@ -326,7 +290,7 @@ class SendingComponent extends Component {
 	              id="senderName"
 	              placeholder='Enter sender name'
 	              required='true'
-	              pattern='^[a-zA-Z]{3,30}'              
+	              pattern='^[a-zA-ZА-Яа-яЁёЇїІіЄєҐґ\s\-]{3,50}'              
 	              value={senderName}
 	              onChange={this.handleSenderChange}
 	          	/>
@@ -347,6 +311,7 @@ class SendingComponent extends Component {
 	                  required='true'              
 	                  value={senderPhone}
 	                  onChange={this.handleSenderChange}
+	                  onBlur={this.handleSenderBlur}
 	                />
 	              </div>
 	            </div>
@@ -377,7 +342,7 @@ class SendingComponent extends Component {
 	              id="receiverName"
 	              placeholder='Enter receiver name'
 	              required='true'         
-	              pattern='^[a-zA-Z]{3,30}'     
+	              pattern='^[a-zA-ZА-Яа-яЁёЇїІіЄєҐґ\s\-]{3,50}'     
 	              value={receiverName}
 	              onChange={this.handleReceiverChange}
 	            />
@@ -398,6 +363,7 @@ class SendingComponent extends Component {
 	                  required='true'              
 	            	  value={receiverPhone}
 	            	  onChange={this.handleReceiverChange}
+	            	  onBlur={this.handleReceiverBlur}
 	                />
 	              </div>
 	            </div>
@@ -519,6 +485,41 @@ class SendingComponent extends Component {
           SAVE
         </button>        
       </form>
+      <Modal show={this.state.show}>
+		<Modal.Header>
+		  <Modal.Title>Success</Modal.Title>
+		</Modal.Header>
+		  <Modal.Body>
+		    <h3>You have created new sending!</h3>
+		    <p>Sending number: {this.state.newSendingId}</p>
+		    <p>You can find out about your sending using this number</p>
+		  </Modal.Body>
+		  <Modal.Footer>		    
+			<Button
+			  bsStyle="primary" 
+			  onClick={this.handleClose}
+			>
+			  OK
+			</Button>
+          </Modal.Footer>
+		</Modal>
+		<Modal show={this.state.showError}>
+		<Modal.Header>
+		  <Modal.Title>Error</Modal.Title>
+		</Modal.Header>
+		  <Modal.Body>
+		    <h3>Something went wrong. Sorry!</h3>		    
+		  </Modal.Body>
+		  <Modal.Footer>		    
+			<Button
+			  bsStyle="primary" 
+			  onClick={this.handleClose}
+			>
+			  OK
+			</Button>
+          </Modal.Footer>
+		</Modal>
+	  </div>
     );
   }
 }
