@@ -238,7 +238,7 @@ class SendingComponent extends Component {
   	   coment, weight, amount, fragile, cost, idStorageSender, idStorageReceiver, idUserSender, idUserReceiver })
   	    .then(res => {  
   	      //console.log(res);
-	      this.setState({newSendingId: res.data.id, show: true});
+	      this.setState({newSendingId: res.data.number, show: true});
 	    })
 	    .catch(err => this.createErrorMessage())
   	}	

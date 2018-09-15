@@ -9,6 +9,7 @@ import AddTariff from "./AddTariff";
 import TariffsList from "./TariffsList";
 
 import AddSending from "./AddSending";
+import Sending from "./Sending";
 
 import {withGoogleMap, Marker, GoogleMap} from "react-google-maps";
 
@@ -70,8 +71,8 @@ export const TariffPage = () => (
 export const SendingPage = () => (
   <div className="row mt-4">
     <div className="col-4">
-      <h2>Sendings list</h2>
-      
+      <h2>Find sending by numder</h2>
+      <Sending />
     </div>
     <div className="col-6 offset-md-1">
       <h2>Add new sending</h2>
