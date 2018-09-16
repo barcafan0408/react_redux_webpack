@@ -5,42 +5,42 @@ import axios from 'axios';
 const env = process.env.NODE_ENV || 'development';
 const config = require(`${__dirname}/../../../config/config.js`)[env];
 
-class SelectComponent extends Component {
+class SelectTransportComponent extends Component {
   
   constructor(props) {
     super(props); 
     
   	this.state = { 
-      storages: [],
+      transport: [],
     };  	
   }
 
   componentDidMount() {
-    axios.get(`${config.path}/storages`)
+    axios.get(`${config.path}/transport`)
       .then(res => {
         this.setState({
-          storages: res.data.map(store => ({ label: store.name, value: store.id }))
+          transport: res.data.map(car => ({ label: car.name, value: car.id, maxWeight: car.maxWeight }))
         })
       })
   }
   
   render() {  	
-  	const index = this.state.storages.findIndex((element) =>
-      element.value === this.props.idStorage 
+  	const index = this.state.transport.findIndex((element) =>
+      element.value === this.props.idTransport 
     );
     return (
       <div>
         <Select          
           name="form-field-name"
-          value={this.props.idStorage === null || this.props.idStorage === undefined ? null : this.state.storages[index]}
+          value={this.props.idTransport === null || this.props.idTransport === undefined ? null : this.state.transport[index]}
           onChange={this.props.handleOnChange}          
           isClearable='true'
           isSearchable='true'
-          options={this.state.storages}                  
+          options={this.state.transport}                  
         />
       </div>
     );
   }
 }
 
-export default SelectComponent;
+export default SelectTransportComponent;

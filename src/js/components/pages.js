@@ -11,6 +11,9 @@ import TariffsList from "./TariffsList";
 import AddSending from "./AddSending";
 import Sending from "./Sending";
 
+import AddRouteList from "./AddRouteList";
+import RoutesList from "./RoutesList";
+
 import {withGoogleMap, Marker, GoogleMap} from "react-google-maps";
 
 const MyGoogleMapComponent = withGoogleMap(props => 
@@ -77,6 +80,19 @@ export const SendingPage = () => (
     <div className="col-6 offset-md-1">
       <h2>Add new sending</h2>
       <AddSending />
+    </div>
+  </div>
+)
+
+export const RouteListPage = () => (
+  <div className="row mt-4">
+    <div className="col-4">
+      <h2>Routes list</h2>
+      <RoutesList />
+    </div>
+    <div className="col-6 offset-md-1">
+      <h2>Add new route list</h2>
+      <AddRouteList />
     </div>
   </div>
 )

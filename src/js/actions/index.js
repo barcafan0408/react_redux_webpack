@@ -42,3 +42,18 @@ export const removeTariff = id => ({
   type: "REMOVE_TARIFF",
   payload: id
 });
+
+export const addRouteList = routeList => ({
+  type: "ADD_ROUTE_LIST",
+  payload: routeList
+});
+
+export const addRoutesList = data => ({
+  type: "ADD_ROUTES_LIST",
+  payload: data
+});
+
+export const removeRouteList = id => ({
+  type: "REMOVE_ROUTE_LIST",
+  payload: id
+});
