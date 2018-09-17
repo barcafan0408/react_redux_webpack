@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import axios from 'axios';
 import PropTypes from "prop-types";
-import { addStoragesList, removeStorage } from "../actions/index";
+import { addStoragesList } from "../actions/index";
 import { Button, Modal } from 'react-bootstrap';
 
 const env = process.env.NODE_ENV || 'development';
@@ -14,47 +14,47 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    addStoragesList: data => dispatch(addStoragesList(data)),
-    removeStorage: id => dispatch(removeStorage(id))
+    addStoragesList: data => dispatch(addStoragesList(data))
   };
 };
 
 class ConnectedList extends React.Component{
   
-  constructor() {
-    super(); 
+  constructor(props) {
+    super(props); 
 
     this.state = {
       show: false,
-    };    
-  
-    this.handleClose = this.handleClose.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);  
+    }; 
   }
 
   componentDidMount() {
-    axios.get(`${config.path}/storages`)
-    .then(response => {
-      this.props.addStoragesList(response.data);
-    });
+    this.getStoragesList();
   }
 
-  handleDelete() {
+  handleDelete = () => {
     this.setState({ show: false });   
     const id = this.state.deleteId;
     console.log(id);
     axios.delete(`${config.path}/storages/${id}`)
       .then(res => {
-        this.props.removeStorage(id);
+        this.getStoragesList();
       });
   }
 
-  handleClose() {
+  handleClose = () => {
     this.setState({ show: false });
   }  
 
   handleShow(id) {
     this.setState({ show: true, deleteId: id });
+  }
+
+  getStoragesList = () => {
+    axios.get(`${config.path}/storages`)
+    .then(res => {
+      this.props.addStoragesList(res.data);
+    }); 
   }
   
   render() {  
@@ -66,8 +66,15 @@ class ConnectedList extends React.Component{
 	        <li className="list-group-item" key={el.id}>
 	          <div className="row align-items-center">
 	            <div className="col-7">
-	        	  {el.name} {'(country: ' + el.country + ', region: ' + el.region + ', city: ' + 
-	        	  el.city + ', street: ' + el.street + ', house: ' + el.house + ', type: ' + el.storageType + ')'}
+	        	  <b>{el.name}</b> 
+	        	  <br />
+	        	  {el.country}
+	        	  <br />
+	        	  {el.region + ', ' + el.city}
+				  <br />
+	        	  {el.street + ', ' + el.house}
+				  <br />
+	        	  {el.storageType.replace(/_/g," ")}
 	            </div>
 	            <button 
 	              className="col-2 btn btn-danger btn-sm"

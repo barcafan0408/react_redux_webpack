@@ -490,9 +490,10 @@ class SendingComponent extends Component {
 		  <Modal.Title>Success</Modal.Title>
 		</Modal.Header>
 		  <Modal.Body>
-		    <h3>You have created new sending!</h3>
+		    <h3>You have created a new sending!</h3>
 		    <p>Sending number: {this.state.newSendingId}</p>
 		    <p>You can find out about your sending using this number</p>
+		    <p>Also we sent this number on your email</p>
 		  </Modal.Body>
 		  <Modal.Footer>		    
 			<Button

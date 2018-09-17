@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import axios from 'axios';
 import PropTypes from "prop-types";
-import { addTransportList, removeTransport } from "../actions/index";
+import { addTransportList } from "../actions/index";
 import { Button, Modal } from 'react-bootstrap';
 
 import EditTransport from './EditTransport';
@@ -16,18 +16,14 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    addTransportList: data => dispatch(addTransportList(data)),
-    removeTransport: id => dispatch(removeTransport(id))
+    addTransportList: data => dispatch(addTransportList(data))
   };
 };
 
 class ConnectedList extends React.Component{
   
-  constructor() {
-    super();    
-    
-    this.handleClose = this.handleClose.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);    
+  constructor(props) {
+    super(props);          
     
     this.state = {
       show: false,
@@ -37,23 +33,19 @@ class ConnectedList extends React.Component{
   }
 
   componentDidMount() {
-    axios.get(`${config.path}/transport`)
-    .then(response => {
-      this.props.addTransportList(response.data);
-    });
+    this.getTransportList();
   }
 
-  handleDelete() {
+  handleDelete = () => {
     this.setState({ show: false });   
-    const id = this.state.deleteId;
-    console.log(id);
+    const id = this.state.deleteId;    
     axios.delete(`${config.path}/transport/${id}`)
       .then(res => {
-        this.props.removeTransport(id);
+        this.getTransportList();
       });
   }
   
-  handleClose() {
+  handleClose = () => {
     this.setState({ show: false });
   }  
 
@@ -63,17 +55,21 @@ class ConnectedList extends React.Component{
 
   handleShowEdit(el) {
     this.setState({ showEdit: true, editEl: el });
-  }  
+  }
+
+  getTransportList = () => {
+    axios.get(`${config.path}/transport`)
+    .then(res => {
+      this.props.addTransportList(res.data);
+    }); 
+  }
+
+  editModalClose = () => {
+  	this.setState({ showEdit: false });
+  	this.getTransportList();	
+  }
   
-  render() {  
-    //let editModalClose = () => this.setState({ showEdit: false });
-    let editModalClose = () => {
-    	this.setState({ showEdit: false });
-    	axios.get(`${config.path}/transport`)
-		    .then(response => {
-		      this.props.addTransportList(response.data);
-		    });
-		}	
+  render() {	
   	return (
   	  <div>  	
 	    <ul className="list-group list-group-flush">
@@ -81,7 +77,7 @@ class ConnectedList extends React.Component{
 	        <li className="list-group-item" key={el.id}>
 	          <div className="row align-items-center">
 	            <div className="col-7">
-	        	  {el.name} {'(volume: ' + el.volume + ', max weight: ' + el.maxWeight + ', speed: ' + el.speed + ')'}
+	        	  <b>{el.name}</b> <br /> {'Volume: ' + el.volume} <br /> {'Max. weight: ' + el.maxWeight} <br /> {'Speed: ' + el.speed}
 	            </div>
 	            <button 
 	              className="col-2 btn btn-danger btn-sm"
@@ -121,7 +117,7 @@ class ConnectedList extends React.Component{
           </Modal.Footer>
 		</Modal>
 		{this.state.showEdit ?		
-		  <EditTransport show={this.state.showEdit} onHide={editModalClose} transport={this.state.editEl}/>	
+		  <EditTransport show={this.state.showEdit} onHide={this.editModalClose} transport={this.state.editEl}/>	
 		: null}	
       </div>
 	)

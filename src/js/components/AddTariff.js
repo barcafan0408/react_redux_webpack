@@ -142,8 +142,8 @@ class TariffComponent extends Component<*, State> {
             type="number"
             className="form-control"
             id="minWeight"
-            step='100'
-            min='100'
+            step='1'
+            min='1'
             max='10000'
             value={minWeight}
 	        onChange={this.handleChange}
@@ -153,8 +153,8 @@ class TariffComponent extends Component<*, State> {
             type="number"
             className="form-control"
             id="maxWeight"
-            step='100'
-            min='100'
+            step='1'
+            min='1'
             max='10000'
             value={maxWeight}
 	        onChange={this.handleChange}

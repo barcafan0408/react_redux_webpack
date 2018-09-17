@@ -3,14 +3,14 @@ import { connect } from "react-redux";
 import axios from 'axios';
 import PropTypes from "prop-types";
 import {withGoogleMap, Marker, GoogleMap} from "react-google-maps";
-import { addStorage } from "../actions/index";
+import { addStoragesList } from "../actions/index";
 
 const env = process.env.NODE_ENV || 'development';
 const config = require(`${__dirname}/../../../config/config.js`)[env];
 
 const mapDispatchToProps = dispatch => {
   return {
-    addStorage: storage => dispatch(addStorage(storage))
+    addStoragesList: data => dispatch(addStoragesList(data))
   };
 };
 
@@ -42,20 +42,16 @@ class StorageComponent extends Component {
         street: "",
       	house: "",
       },
-      type: "less_than_30",
+      type: "less than 30",
       isMarkerShown: true,
       currentLatLng: {
         lat: 49.232957,
         lng: 28.468102,
       },                
-    };    
-    
-    this.handleMarkerDrop = this.handleMarkerDrop.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    };  
   }
   
-  handleMarkerDrop(e) {
+  handleMarkerDrop = (e) => {
     this.setState({
       currentLatLng: {
         lat: e.latLng.lat(),
@@ -103,20 +99,19 @@ class StorageComponent extends Component {
     }.bind(this));    
   }  
 
-  handleChange(event) {
+  handleChange = (event) => {
     this.setState({ [event.target.id]: event.target.value });
   }
 
-  handleSubmit(event) {
+  handleSubmit = (event) => {
     event.preventDefault();
     const { country, region, city, street, house } = this.state.address;
-  	const { name, type } = this.state;
-    
+  	const { name} = this.state;
+    const type = this.state.type.replace(/ /g,"_");
+
     axios.post(`${config.path}/storages`, { storageName:name, country, region, city, street, house, storageType:type })
       .then(res => {
-        console.log(res);
-        console.log(res.data);
-        this.props.addStorage({ name, country, region, city, street, house, storageType:type, id: res.data.id });
+        this.getStoragesList();
       })        
       .catch(err =>
         console.error(err)
@@ -131,8 +126,15 @@ class StorageComponent extends Component {
 	    street: "",
 	   	house: "",
 	  },
-	  type: "less_than_30", 
+	  type: "less than 30", 
     });
+  }
+
+  getStoragesList = () => {
+    axios.get(`${config.path}/storages`)
+    .then(res => {
+      this.props.addStoragesList(res.data);
+    }); 
   }
 
   render() {
@@ -140,97 +142,125 @@ class StorageComponent extends Component {
   	const { name, type } = this.state;
     return (
       <div className="row mt-4">
-      <div className="col-5">
+        <div className="col-5">
 	      <form onSubmit={this.handleSubmit}>
 	        <div className="form-group">
-	          <label htmlFor="title">Name</label>
-	          <input
-	            type="text"
-	            className="form-control"
-	            id="name"
-	            placeholder='Enter transport name'
-	            required='true'
-	            pattern='^[a-zA-Z0-9\s_\\-\\#№]{2,255}'
-	            value={name}
-	            onChange={this.handleChange}
-	          />
-	          <label htmlFor="title">Country</label>
-	          <input
-	            type="text"
-	            className="form-control"
-	            id="country"
-	            placeholder='Enter country'
-	            required='true'
-	            disabled='true'
-	            value={country}
-	          />
-	          <label htmlFor="title">Region</label>
-	          <input
-	            type="text"
-	            className="form-control"
-	            id="region"
-	            placeholder='Enter region'
-	            required='true'
-	            disabled='true'
-	            value={region}	            
-	          />
-	          <label htmlFor="title">City</label>
-	          <input
-	            type="text"
-	            className="form-control"
-	            id="city"
-	            placeholder='Enter city'
-	            required='true'
-	            disabled='true'
-	            value={city}	            
-	          />
-	          <label htmlFor="title">Street</label>
-	          <input
-	            type="text"
-	            className="form-control"
-	            id="street"
-	            placeholder='Enter street'
-	            required='true'
-	            disabled='true'
-	            value={street}	            
-	          />
-	          <label htmlFor="title">House</label>
-	          <input
-	            type="text"
-	            className="form-control"
-	            id="region"
-	            placeholder='Enter house number'
-	            required='true'
-	            disabled='true'
-	            value={house}	            
-	          />
-	          <label htmlFor="title">Type</label>
-	          <select
-                className="form-control"
-	            id="type"
-	            required='true'
-	            value={type}
-	            onChange={this.handleChange}
-	          > 
-	            <option>less_than_30</option>
-  				<option>more_than_30</option>
-	          </select>
+	          <div className="row mt-4">
+            	<div className="col-12">
+		          <label htmlFor="title">Name</label>
+		          <input
+		            type="text"
+		            className="form-control"
+		            id="name"
+		            placeholder='Enter transport name'
+		            required='true'
+		            pattern='^[a-zA-Z0-9\s_\-#№]{2,255}'
+		            value={name}
+		            onChange={this.handleChange}
+		          />
+		        </div>
+          	  </div>
+          	  <div className="row mt-4">
+            	<div className="col-12">
+		          <label htmlFor="title">Country</label>
+		          <input
+		            type="text"
+		            className="form-control"
+		            id="country"
+		            placeholder='Enter country'
+		            required='true'
+		            disabled='true'
+		            value={country}
+		          />
+		        </div>
+          	  </div>
+          	  <div className="row mt-4">
+            	<div className="col-12">
+		          <label htmlFor="title">Region</label>
+		          <input
+		            type="text"
+		            className="form-control"
+		            id="region"
+		            placeholder='Enter region'
+		            required='true'
+		            disabled='true'
+		            value={region}	            
+		          />
+		        </div>
+          	  </div>
+          	  <div className="row mt-4">
+            	<div className="col-12">
+		          <label htmlFor="title">City</label>
+		          <input
+		            type="text"
+		            className="form-control"
+		            id="city"
+		            placeholder='Enter city'
+		            required='true'
+		            disabled='true'
+		            value={city}	            
+		          />
+		        </div>
+          	  </div>
+          	  <div className="row mt-4">
+            	<div className="col-12">
+		          <label htmlFor="title">Street</label>
+		          <input
+		            type="text"
+		            className="form-control"
+		            id="street"
+		            placeholder='Enter street'
+		            required='true'
+		            disabled='true'
+		            value={street}	            
+		          />
+		        </div>
+          	  </div>
+          	  <div className="row mt-4">
+            	<div className="col-12">
+		          <label htmlFor="title">House</label>
+		          <input
+		            type="text"
+		            className="form-control"
+		            id="region"
+		            placeholder='Enter house number'
+		            required='true'
+		            disabled='true'
+		            value={house}	            
+		          />
+		        </div>
+          	  </div>
+          	  <div className="row mt-4 mb-2">
+            	<div className="col-12">
+		          <label htmlFor="title">Type</label>
+		          <select
+	                className="form-control"
+		            id="type"
+		            required='true'
+		            value={type}
+		            onChange={this.handleChange}
+		          > 
+		            <option>less than 30</option>
+	  				<option>more than 30</option>
+		          </select>
+		        </div>
+          	  </div>
 	        </div>
 	        <button type="submit" className="btn btn-success btn-lg">
 	          SAVE
 	        </button>
 	      </form>
-      </div>
-      <div className="col-7">
-      <GoogleMapComponent
-        isMarkerShown={this.state.isMarkerShown}
-        currentLocation={this.state.currentLatLng}
-        onDragEnd={this.handleMarkerDrop}        
-        loadingElement={<div style={{ height: `100%` }} />}
-        containerElement={<div style={{ height: `400px` }} />}
-        mapElement={<div style={{ height: `100%` }} />}
-      />
-      </div>
+        </div>
+        <div className="col-7">
+          <GoogleMapComponent
+            isMarkerShown={this.state.isMarkerShown}
+            currentLocation={this.state.currentLatLng}
+            onDragEnd={this.handleMarkerDrop}        
+            loadingElement={<div style={{ height: `100%` }} />}
+            containerElement={<div style={{ height: `600px` }} />}
+            mapElement={<div style={{ height: `100%` }} />}
+          />
+        </div>
       </div>
     )
   }
@@ -239,7 +269,7 @@ class StorageComponent extends Component {
 const AddStorageComponent = connect(null, mapDispatchToProps)(StorageComponent);
 
 StorageComponent.propTypes = {
-  addStorage: PropTypes.func.isRequired
+  addStoragesList: PropTypes.func.isRequired
 };
 
 export default AddStorageComponent;
