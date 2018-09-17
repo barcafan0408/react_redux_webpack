@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import SelectTransportComponent from './SelectTransportComponent';
 import SelectSendingComponent from './SelectSendingComponent';
 import SelectComponent from './SelectComponent';
-import { addRouteList } from "../actions/index";
+import { addRoutesList } from "../actions/index";
 import {Overlay, Tooltip, Button, Modal} from 'react-bootstrap';
 import ReactDOM from 'react-dom';
 
@@ -14,7 +14,7 @@ const config = require(`${__dirname}/../../../config/config.js`)[env];
 
 const mapDispatchToProps = dispatch => {
   return {
-    addRouteList: routeList => dispatch(addRouteList(routeList))
+    addRoutesList: data => dispatch(addRoutesList(data))
   };
 };
 
@@ -119,7 +119,7 @@ class RouteListComponent extends Component {
 	    
 	  axios.post(`${config.path}/routeLists`, { date, expectingDate, idTransport, idStorageSender, idStorageReceiver, sendings })
 	    .then(res => {
-	      this.props.addRouteList({ id: res.data.id });
+	      this.getRoutesList();
 	    })        
 	    .catch(err =>
 	      console.error(err)
@@ -135,6 +135,13 @@ class RouteListComponent extends Component {
         sendings: [], 
 	  });
   	}
+  }
+
+  getRoutesList = () => {
+    axios.get(`${config.path}/routeLists`)
+    .then(res => {
+      this.props.addRoutesList(res.data);
+    }); 
   }
 
   render() {
