@@ -2,34 +2,20 @@ import React from "react";
 import { connect } from "react-redux";
 import axios from 'axios';
 import PropTypes from "prop-types";
-import { addStoragesList, addTariffsList, removeTariff } from "../actions/index";
+import { addTariffsList } from "../actions/index";
 import { Button, Modal } from 'react-bootstrap';
+import EditTariff from './EditTariff';
 
 const env = process.env.NODE_ENV || 'development';
 const config = require(`${__dirname}/../../../config/config.js`)[env];
 
-const mapStateToProps = state => {
-  const {list} = state.storagesList;  
-  const tariffsList = state.tariffsList.list.map(el => {
-  	const indexSender = list.findIndex((element) =>
-      element.id === el.idStorageSender 
-    );
-    const indexReceiver = list.findIndex((element) =>
-      element.id === el.idStorageReceiver 
-    );
-    const StorageSenderName = list[indexSender].name;
-    const StorageReceiverName = list[indexReceiver].name;
-    return { id: el.id, date: el.date, idStorageSender: el.idStorageSender, idStorageReceiver: el.idStorageReceiver, StorageSenderName, StorageReceiverName,
-      minWeight: el.minWeight, maxWeight: el.maxWeight, fragile: el.fragile, price: el.price };     
-  });  
-  return { tariffsList };
+const mapStateToProps = state => {  
+  return { tariffsList: state.tariffsList.list };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    addStoragesList: data => dispatch(addStoragesList(data)),
-    addTariffsList: data => dispatch(addTariffsList(data)),
-    removeTariff: id => dispatch(removeTariff(id))
+    addTariffsList: data => dispatch(addTariffsList(data))
   };
 };
 
@@ -40,41 +26,48 @@ class ConnectedList extends React.Component{
 
     this.state = {
       show: false,
-    };    
-  
-    this.handleClose = this.handleClose.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);  
+      showEdit: false,
+      editEl: {},
+    };  
   }
 
   componentDidMount() {
-    axios.get(`${config.path}/storages`)
-    .then(response => {
-      this.props.addStoragesList(response.data);
-    });
-    axios.get(`${config.path}/tariffs`)
-    .then(response => {
-      this.props.addTariffsList(response.data);
-    });
+    this.getTariffsList();
   }
 
-  handleDelete() {
+  handleDelete = () => {
     this.setState({ show: false });   
     const id = this.state.deleteId;
-    console.log(id);
     axios.delete(`${config.path}/tariffs/${id}`)
       .then(res => {
-        this.props.removeTariff(id);
+        this.getTariffsList();
       });
   }
 
-  handleClose() {
+  handleClose = () => {
     this.setState({ show: false });
   }  
 
   handleShow(id) {
     this.setState({ show: true, deleteId: id });
   }
+
+  handleShowEdit(el) {
+    this.setState({ showEdit: true, editEl: el });
+  }
+
+  getTariffsList = () => {
+    axios.get(`${config.path}/tariffs`)
+    .then(res => {
+      this.props.addTariffsList(res.data);
+    }); 
+  }
   
+  editModalClose = () => {
+  	this.setState({ showEdit: false });
+  	this.getTariffsList();	
+  }
+
   render() {  
     	
   	return (
@@ -88,7 +81,7 @@ class ConnectedList extends React.Component{
 	        	    {'date: ' + new Date(el.date).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: '2-digit' })}
 	        	  </p>
 	        	  <p>
-	        	    {'sender: ' + el.StorageSenderName + ', receiver: ' + el.StorageReceiverName}
+	        	    {'sender: ' + el.storageSenderName + ', receiver: ' + el.storageReceiverName}
 	        	  </p>
 	        	  <p>
 	        	    {'minWeight: ' + el.minWeight + ', maxWeight: ' + el.maxWeight}
@@ -105,7 +98,7 @@ class ConnectedList extends React.Component{
 	            </button>
 	            <button 
 	              className="col-2 btn btn-warning btn-sm offset-1"
-	              
+	              onClick={this.handleShowEdit.bind(this, el)}
 	            >
 	              Change
 	            </button>
@@ -133,7 +126,10 @@ class ConnectedList extends React.Component{
 			  Cancel
 			</Button>
           </Modal.Footer>
-		</Modal>	
+		</Modal>
+		{this.state.showEdit ?		
+		  <EditTariff show={this.state.showEdit} onHide={this.editModalClose} tariff={this.state.editEl}/>	
+		: null}	
       </div>
 	)
   }  

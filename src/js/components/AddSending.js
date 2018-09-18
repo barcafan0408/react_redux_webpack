@@ -283,19 +283,6 @@ class SendingComponent extends Component {
   			</div>          
           	<div className="panel-body row mt-1">                    
 	          <div className="col-4">
-		      	<label htmlFor="title">Name</label>
-		      	<input
-	              type="text"
-	              className="form-control"
-	              id="senderName"
-	              placeholder='Enter sender name'
-	              required='true'
-	              pattern='^[a-zA-ZА-Яа-яЁёЇїІіЄєҐґ\s\-]{3,50}'              
-	              value={senderName}
-	              onChange={this.handleSenderChange}
-	          	/>
-		      </div>
-		      <div className="col-4">
 		        <label htmlFor="title">Phone</label>
 		        <div className="row">
 		          <div className="col-2 align-self-end">
@@ -316,6 +303,19 @@ class SendingComponent extends Component {
 	              </div>
 	            </div>
 		      </div>
+	          <div className="col-4">
+		      	<label htmlFor="title">Name</label>
+		      	<input
+	              type="text"
+	              className="form-control"
+	              id="senderName"
+	              placeholder='Enter sender name'
+	              required='true'
+	              pattern='^[a-zA-ZА-Яа-яЁёЇїІіЄєҐґ\s\-]{3,50}'              
+	              value={senderName}
+	              onChange={this.handleSenderChange}
+	          	/>
+		      </div>		      
 		      <div className="col-4">
 		        <label htmlFor="title">Email</label>
 		        <input
@@ -335,19 +335,6 @@ class SendingComponent extends Component {
   			</div>		  
             <div className="panel-body row mt-1">                    
 	          <div className="col-4">
-		        <label htmlFor="title">Name</label>
-		        <input
-	              type="text"
-	              className="form-control"
-	              id="receiverName"
-	              placeholder='Enter receiver name'
-	              required='true'         
-	              pattern='^[a-zA-ZА-Яа-яЁёЇїІіЄєҐґ\s\-]{3,50}'     
-	              value={receiverName}
-	              onChange={this.handleReceiverChange}
-	            />
-		      </div>
-		      <div className="col-4">
 		        <label htmlFor="title">Phone</label>
 		        <div className="row">
 		          <div className="col-2 align-self-end">
@@ -368,6 +355,19 @@ class SendingComponent extends Component {
 	              </div>
 	            </div>
 		      </div>
+	          <div className="col-4">
+		        <label htmlFor="title">Name</label>
+		        <input
+	              type="text"
+	              className="form-control"
+	              id="receiverName"
+	              placeholder='Enter receiver name'
+	              required='true'         
+	              pattern='^[a-zA-ZА-Яа-яЁёЇїІіЄєҐґ\s\-]{3,50}'     
+	              value={receiverName}
+	              onChange={this.handleReceiverChange}
+	            />
+		      </div>		      
 		      <div className="col-4">
 		        <label htmlFor="title">Email</label>
 		        <input
@@ -399,29 +399,35 @@ class SendingComponent extends Component {
           	  <div className="row mt-2">                    
 	            <div className="col-4">
           	      <label htmlFor="title">Weight</label>
-                  <input
-            	    type="number"
-            	    className="form-control"
-            		id="weight"
-            		step='1'
-            		min='1'
-            		max='10000'
-            		value={weight}
-	        		onChange={this.handleChange}
-          	      />
+          	      <div className="input-group">
+                    <input
+            	      type="number"
+            	      className="form-control"
+            		  id="weight"
+            		  step='1'
+            		  min='1'
+            		  max='10000'
+            		  value={weight}
+	        		  onChange={this.handleChange}
+          	        />
+          	        <span className="input-group-addon">kg</span>
+                  </div>
           	    </div>
           	    <div className="col-4">
           	  	  <label htmlFor="title">Amount</label>
-              	  <input
-            		type="number"
-            		className="form-control"
-            		id="amount"
-            		step='10'
-            		min='10'
-            		max='1000000'
-            		value={amount}
-	        		onChange={this.handleChange}
-          	 	  />
+          	  	  <div className="input-group">
+              	    <input
+            		  type="number"
+            		  className="form-control"
+            		  id="amount"
+            		  step='10'
+            		  min='10'
+            		  max='1000000'
+            		  value={amount}
+	        		  onChange={this.handleChange}
+          	 	    />
+          	 	    <span className="input-group-addon">uah</span>
+                  </div>
           	    </div>
           	    <div className="col-4 align-self-end">
                   <div className="checkbox">
